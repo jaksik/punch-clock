@@ -74,6 +74,16 @@ class Firebase {
   user = uid => this.db.ref(`users/${uid}`);
 
   users = () => this.db.ref('users');
+
+  // *** Categories API ***
+  categories = () => this.db.ref('categories');
+
+  getCategory = catId => this.db.ref(`categories/${catId}`);
+
+  createTimePunch = catId => this.db.ref(`timePunches/${catId}/times`);
+
+  timePunches = catId => this.db.ref(`timePunches/${catId}/times`);
+
 }
 
 export default Firebase;

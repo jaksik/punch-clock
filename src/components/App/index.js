@@ -9,9 +9,11 @@ import PasswordForgetPage from '../PasswordForget';
 import HomePage from '../Home';
 import AccountPage from '../Account';
 import AdminPage from '../Admin';
- 
+import CategoryPage from '../Category';
+
 import * as ROUTES from '../../constants/routes';
 import { withAuthentication } from '../Session';
+import Dashboard from '../Dashboard';
  
 const App = () => (
   <Router>
@@ -27,9 +29,11 @@ const App = () => (
         path={ROUTES.PASSWORD_FORGET}
         component={PasswordForgetPage}
       />
+      <Route path={ROUTES.DASHBOARD} component={Dashboard} />
       <Route path={ROUTES.HOME} component={HomePage} />
       <Route path={ROUTES.ACCOUNT} component={AccountPage} />
       <Route path={ROUTES.ADMIN} component={AdminPage} />
+      <Route path="/category/:id" component={CategoryPage} />
     </div>
   </Router>
 );
