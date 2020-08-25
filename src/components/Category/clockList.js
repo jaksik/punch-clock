@@ -3,8 +3,9 @@ import { compose } from 'recompose';
 
 import { withFirebase } from '../Firebase';
 import { withAuthorization } from '../Session';
-import { ListGroup, ListGroupItem, Table, Button } from 'reactstrap';
+import { ListGroup, ListGroupItem, Table, Row, Col } from 'reactstrap';
 import { PieChart } from 'react-minimal-pie-chart';
+import Clock from './clock';
 
 class CategoryListComponent extends Component {
   constructor(props) {
@@ -14,7 +15,6 @@ class CategoryListComponent extends Component {
       loading: false,
       timePunches: [],
       categoryInfo: {},
-      time: Date.now()
     };
   }
  
@@ -31,14 +31,19 @@ class CategoryListComponent extends Component {
     this.props.firebase.timePunches(this.props.categoryId).on('value', snapshot => {
       const categoryObject = snapshot.val();
 
-      const timePunchesList = Object.keys(categoryObject).map(key => {
-        return ({
-        ...categoryObject[key],
-        uid: key,
-      })});
+      if (categoryObject) {
+        const timePunchesList = Object.keys(categoryObject).map(key => {
+          return ({
+          ...categoryObject[key],
+          uid: key,
+        })});
+        timePunchesList.reverse();
+        this.setState({
+          timePunches: timePunchesList,
+        });
+      }
     
       this.setState({
-        timePunches: timePunchesList,
         loading: false,
       });
     });
@@ -64,11 +69,13 @@ class CategoryListComponent extends Component {
                 style={{ padding: `30px 80px 15px` }}
             />
         <p style={{textAlign:`center`}}>27 Hours this week</p>
-        <p>{this.state.time}</p>
-        <Button color="success">Clock In</Button>
         {loading && <div>Loading ...</div>}
- 
-        <CategoryList timePunches={timePunches} />
+        <Row className="no-gutters">
+          <Col className="d-flex justify-content-center" xs={12}>
+            <Clock categoryId={this.props.categoryId}/>
+          </Col>
+        </Row>
+        <CategoryList timePunches={timePunches}/>
       </div>
     );
   }

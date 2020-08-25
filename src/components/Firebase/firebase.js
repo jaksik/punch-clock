@@ -82,7 +82,10 @@ class Firebase {
 
   createTimePunch = catId => this.db.ref(`timePunches/${catId}/times`);
 
-  timePunches = catId => this.db.ref(`timePunches/${catId}/times`);
+  timePunches = catId => this.db.ref(`timePunches/${catId}/times`).orderByChild('timeIn');
+
+  updateTimePunch = (catId, punchId) => this.db.ref(`timePunches/${catId}/times/${punchId}/timeOut`);
+
 
 }
 

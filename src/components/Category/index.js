@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { AuthUserContext, withAuthorization } from '../Session';
 import ClockForm from './clockForm';
 import ClockList from './clockList';
+import ClockButton from './clockButton';
 
 const DashboardPage = (props) => {
     console.log("Props:::", props);
@@ -18,7 +19,8 @@ const DashboardPage = (props) => {
             {authUser => (
                 <div>
                     <ClockList categoryId={categoryId}/>
-                    <ClockForm categoryId={categoryId}/>
+                    {/* <ClockButton categoryId={categoryId}/> */}
+                    {/* <ClockForm categoryId={categoryId}/> */}
                 </div>
             )}
         </AuthUserContext.Consumer>
