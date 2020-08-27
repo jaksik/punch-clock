@@ -59,12 +59,12 @@ class CategoryListComponent extends Component {
     //Fill Pie Chart State Array
     //Loop through timePunchList Array
     //Make an object for each task and push it to the array
-    let colors = [
+    let colorsArray = [
       "#E38627",
       "#C13C37",
       "#6A2135",
-      "#E38627",
-      "#C13C37",
+      "#0000ff",
+      "#00ff16",
       "#6A2135",
       "#E38627",
       "#C13C37",
@@ -80,7 +80,7 @@ class CategoryListComponent extends Component {
       let taskObject = {
         title: timePunch.task,
         value: timePunch.totalTime,
-        color: colors[index],
+        color: colorsArray[index],
       };
 
       if (pieChartArray.length === 0) {
@@ -90,14 +90,21 @@ class CategoryListComponent extends Component {
         let itemsMatch = false;
         pieChartArray.map((pieChartArrayTask, i) => {
           if (!itemsMatch && pieChartArrayTask.title === timePunch.task) {
-              itemsMatch = true;
-              let taskTotalTime = pieChartArrayTask.value + timePunch.totalTime;
-              pieChartArray[i].value = taskTotalTime;
+            itemsMatch = true;
+            let taskTotalTime = pieChartArrayTask.value + timePunch.totalTime;
+            pieChartArray[i].value = taskTotalTime;
           }
         })
         if (!itemsMatch) {
+          pieChartArray.map((pieChartArrayTaskColor, ind) => {
+            colorsArray.map((color, colorIndex) => {
+              if (color !== pieChartArrayTaskColor.color) {
+                taskObject.color = color;
+              }
+            })
+          })
           pieChartArray.push(taskObject);
-        console.log("Push Object: ", pieChartArray);
+          console.log("Push Object: ", pieChartArray);
         }
       }
 
@@ -106,7 +113,7 @@ class CategoryListComponent extends Component {
       //if titles match then add timePunchTotal to pieChartArray[*].total
       //else push the new timePunch to the pieChartArray
     })
-    this.setState({pieChartData : pieChartArray})
+    this.setState({ pieChartData: pieChartArray })
   }
 
   render() {
@@ -156,13 +163,22 @@ const CategoryList = ({ timePunches }) => (
       </tr>
     </thead>
     <tbody>
-      {timePunches.map(timePunch => (
+      {timePunches.map(timePunch => {
+        let totalTime = timePunch.totalTime;
+        let totalMinutes = totalTime / 60000;
+        let readableTime = "00:00";
+
+        if (totalMinutes >= 1) {
+          readableTime = "00:" + totalMinutes;
+        }
+
+        return (
         <tr key={timePunch.uid} color={timePunch.theme}>
           <td>{timePunch.date}</td>
           <td>{timePunch.task}</td>
-          <td>{timePunch.totalTime}</td>
+          <td>{readableTime}</td>
         </tr>
-      ))}
+      )})}
 
     </tbody>
   </Table>

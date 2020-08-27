@@ -102,9 +102,18 @@ const Clock = ({ authUser, firebase, categoryId }) => {
             [name]: value
         }));
         console.log("State: ", timePunchData)
+        calculateTotalTime()
     };
 
-    const calculateTotalTime = () =>{
+    const calculateTotalTime = () => {
+        let timeInMinutes = timePunchData.timeIn.substring(3);
+        console.log("Time In: ", timeInMinutes);
+        console.log("Time Out: ", timePunchData.timeOut);
+        let today = new Date();
+        console.log("New Date: ", today);
+        today.setMinutes(timeInMinutes);
+        console.log("Date updated minutes: ", today);
+
 
     }
 
