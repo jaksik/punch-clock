@@ -41,12 +41,6 @@ const Dashboard = ({ authUser, firebase }) => {
                 onChange={handleChange}
                 name="name"
             />
-            <input
-                value={state.uid}
-                type="text"
-                onChange={handleChange}
-                name="uid"
-            />
             <select name="theme" id="cars" value={state.theme} onChange={handleChange}>
                 <option value="success">success</option>
                 <option value="info">info</option>
