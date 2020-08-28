@@ -3,7 +3,7 @@ import { compose } from 'recompose';
 
 import { withFirebase } from '../Firebase';
 import { withAuthorization } from '../Session';
-import { ListGroup, ListGroupItem, Table, Row, Col, Spinner } from 'reactstrap';
+import { Table, Row, Col, Spinner } from 'reactstrap';
 import { PieChart } from 'react-minimal-pie-chart';
 import Clock from './clock';
 
@@ -85,7 +85,7 @@ class CategoryListComponent extends Component {
 
       if (pieChartArray.length === 0) {
         pieChartArray.push(taskObject);
-        console.log("Push Object: ", pieChartArray);
+        // console.log("Push Object: ", pieChartArray);
       } else {
         let itemsMatch = false;
         pieChartArray.map((pieChartArrayTask, i) => {
@@ -104,7 +104,7 @@ class CategoryListComponent extends Component {
             })
           })
           pieChartArray.push(taskObject);
-          console.log("Push Object: ", pieChartArray);
+          // console.log("Push Object: ", pieChartArray);
         }
       }
 

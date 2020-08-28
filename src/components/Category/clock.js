@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { withAuthorization } from '../Session';
 import { withFirebase } from '../Firebase';
@@ -12,7 +12,7 @@ const ClockComponent = ({ authUser, categoryId }) => {
     )
 };
 
-const Clock = ({ authUser, firebase, categoryId }) => {
+function Clock({ authUser, firebase, categoryId }) {
 
     const [clockedIn, toggleClock] = useState(false);
 
@@ -20,13 +20,7 @@ const Clock = ({ authUser, firebase, categoryId }) => {
 
     const [clockOut, clockingOut] = useState(false);
 
-    const [modal, setModal] = useState(clockOut);
-
     const [showEditForm, toggleEditForm] = useState(true);
-
-
-    const toggle = () => toggleEditForm(!showEditForm);
-
 
     const [timePunchData, updateTimePunchData] = useState(
         {
@@ -41,6 +35,18 @@ const Clock = ({ authUser, firebase, categoryId }) => {
         }
     )
 
+    useEffect(() => {
+        console.log("Time Punch Data: ", timePunchData)
+        let totalTime = ((timePunchData.timeOutStamp - timePunchData.timeInStamp) / 1000) / 60;
+        
+        updateTimePunchData(prevState => ({
+            ...prevState,
+            "totalTime": totalTime
+        }));
+    }, [timePunchData.timeInStamp, timePunchData.timeOutStamp]);
+
+    const toggle = () => toggleEditForm(!showEditForm);
+
     const punchClock = () => {
         let today = new Date();
         let currentMonth = today.getMonth() + 1;
@@ -51,10 +57,9 @@ const Clock = ({ authUser, firebase, categoryId }) => {
         let date = today.getFullYear() + '-' + (currentMonth < 10 ? "0" : "") + currentMonth + '-' + (currentDay < 10 ? "0" : "") + currentDay;
         let timeStamp = today.getTime();
 
-        let totalTime = timeStamp - timePunchData.timeInStamp;
-
         //Clock In
         if (!clockedIn) {
+
             updateTimePunchData({
                 date: date,
                 timeIn: time,
@@ -62,26 +67,19 @@ const Clock = ({ authUser, firebase, categoryId }) => {
                 timeOut: "",
                 timeOutStamp: 0,
                 totalTime: 0,
-                task: "Prospecting",
+                task: "",
                 note: "",
             })
+
             firebase.createTimePunch(categoryId).push(timePunchData).then((snap) => {
                 updatePunchId(snap.path.pieces_[3])
                 toggleClock(true);
             });
 
-        //Clock out
+            //Clock out
         } else {
-            updateTimePunchData({
-                date: date,
-                timeIn: timePunchData.timeIn,
-                timeInStamp: timePunchData.timeInStamp,
-                timeOut: time,
-                timeOutStamp: timeStamp,
-                totalTime: totalTime,
-                task: timePunchData.task,
-                note: "",
-            })
+            handleTimePunchData("timeOutStamp", timeStamp);
+            handleTimePunchData("timeOut", time);
             clockingOut(true)
         }
     }
@@ -91,6 +89,7 @@ const Clock = ({ authUser, firebase, categoryId }) => {
         toggleEditForm(false)
         clockingOut(false)
         toggleClock(false);
+        console.log("timePUnchData: ", timePunchData)
     }
 
     const handleFormChange = e => {
@@ -101,27 +100,54 @@ const Clock = ({ authUser, firebase, categoryId }) => {
             ...prevState,
             [name]: value
         }));
-        console.log("State: ", timePunchData)
-        calculateTotalTime()
     };
 
-    const calculateTotalTime = () => {
-        let timeInMinutes = timePunchData.timeIn.substring(3);
-        console.log("Time In: ", timeInMinutes);
-        console.log("Time Out: ", timePunchData.timeOut);
+    const updateTime = e => {
+        const { name, value } = e.target;
+
+        updateTimePunchData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+
         let today = new Date();
-        console.log("New Date: ", today);
-        today.setMinutes(timeInMinutes);
-        console.log("Date updated minutes: ", today);
 
 
+        if (name === "timeIn") {
+            let timeInMinutes = value.substring(3);
+            today.setMinutes(timeInMinutes);
+            today.setSeconds(0)
+            let timeStamp = today.getTime();
+            updateTimePunchData(prevState => ({
+                ...prevState,
+                "timeInStamp": timeStamp
+            }));
+
+        } else if (name === "timeOut") {
+            let timeOutMinutes = value.substring(3);
+            today.setMinutes(timeOutMinutes);
+            today.setSeconds(0)
+            console.log("Today: ", today)
+            let timeStamp = today.getTime();
+            updateTimePunchData(prevState => ({
+                ...prevState,
+                "timeOutStamp": timeStamp
+            }));
+        }
+    }
+
+    const handleTimePunchData = (name, value) => {
+        updateTimePunchData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
     }
 
     return (
         <div>
             <Row>
                 <Col xs={12} className="d-flex align-items-center justify-content-center">
-                {(clockedIn ? <h4>Clocked in at: {timePunchData.timeIn}</h4> : <div style={{minHeight:`30px`}}></div>)}
+                    {(clockedIn ? <h4>Clocked in at: {timePunchData.timeIn}</h4> : <div style={{ minHeight: `30px` }}></div>)}
                 </Col>
             </Row>
             <Button
@@ -171,8 +197,8 @@ const Clock = ({ authUser, firebase, categoryId }) => {
                                             type="time"
                                             name="timeIn"
                                             id="exampleTime"
-                                            onChange={handleFormChange}
-                                            value={timePunchData.timeIn}
+                                            onChange={updateTime}
+                                            value={timePunchData.timeIn || "00:00"}
                                         />
                                     </FormGroup>
                                     :
@@ -192,8 +218,8 @@ const Clock = ({ authUser, firebase, categoryId }) => {
                                             name="timeOut"
                                             id="exampleTime"
                                             placeholder="time placeholder"
-                                            onChange={handleFormChange}
-                                            value={timePunchData.timeOut}
+                                            onChange={updateTime}
+                                            value={timePunchData.timeOut || "00:00"}
                                         />
                                     </FormGroup>
                                     :
