@@ -9,7 +9,7 @@ import PasswordForgetPage from '../PasswordForget';
 import HomePage from '../Home';
 import AccountPage from '../Account';
 import AdminPage from '../Admin';
-import CategoryPage from '../Category';
+import ClockDash from '../ClockDash';
 
 import * as ROUTES from '../../constants/routes';
 import { withAuthentication } from '../Session';
@@ -33,7 +33,7 @@ const App = () => (
       <Route path={ROUTES.HOME} component={HomePage} />
       <Route path={ROUTES.ACCOUNT} component={AccountPage} />
       <Route path={ROUTES.ADMIN} component={AdminPage} />
-      <Route path="/category/:id" component={CategoryPage} />
+      <Route path="/category/:id" component={ClockDash} />
     </div>
   </Router>
 );
