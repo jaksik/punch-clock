@@ -37,7 +37,7 @@ function Clock({ authUser, firebase, categoryId }) {
 
     useEffect(() => {
         console.log("Time Punch Data: ", timePunchData)
-        let totalTime = ((timePunchData.timeOutStamp - timePunchData.timeInStamp) / 1000) / 60;
+        let totalTime = Math.floor(((timePunchData.timeOutStamp - timePunchData.timeInStamp) / 1000) / 60) + 1;
         
         updateTimePunchData(prevState => ({
             ...prevState,
@@ -55,6 +55,8 @@ function Clock({ authUser, firebase, categoryId }) {
         let currentMinutes = today.getMinutes();
         let time = (currentHours < 10 ? '0' : '') + currentHours + ':' + (currentMinutes < 10 ? '0' : '') + currentMinutes;
         let date = today.getFullYear() + '-' + (currentMonth < 10 ? "0" : "") + currentMonth + '-' + (currentDay < 10 ? "0" : "") + currentDay;
+        today.setSeconds(0)
+
         let timeStamp = today.getTime();
 
         //Clock In
@@ -115,6 +117,8 @@ function Clock({ authUser, firebase, categoryId }) {
 
         if (name === "timeIn") {
             let timeInMinutes = value.substring(3);
+            let timeInHours = value.slice(0, 1);
+            today.setHours(timeInHours)
             today.setMinutes(timeInMinutes);
             today.setSeconds(0)
             let timeStamp = today.getTime();
@@ -125,6 +129,8 @@ function Clock({ authUser, firebase, categoryId }) {
 
         } else if (name === "timeOut") {
             let timeOutMinutes = value.substring(3);
+            let timeInHours = value.slice(0, 1);
+            today.setHours(timeInHours)
             today.setMinutes(timeOutMinutes);
             today.setSeconds(0)
             console.log("Today: ", today)
@@ -163,7 +169,7 @@ function Clock({ authUser, firebase, categoryId }) {
             {/* Modal */}
 
             <Modal isOpen={clockOut} toggle={toggle}>
-                <p>You logged: {timePunchData.totalTime}</p>
+                <p>You logged: {(timePunchData.totalTime > 60 ? Math.floor(timePunchData.totalTime / 60) + ":" : timePunchData.totalTime)}</p>
 
                 {
                     showEditForm

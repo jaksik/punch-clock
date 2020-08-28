@@ -4,7 +4,6 @@ import { AuthUserContext, withAuthorization } from '../Session';
 import ClockList from './clockList';
 
 const DashboardPage = (props) => {
-    console.log("Props:::", props);
 
     const categoryId = props.match.params.id;
 
