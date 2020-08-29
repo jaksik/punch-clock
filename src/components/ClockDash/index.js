@@ -1,25 +1,81 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { compose } from 'recompose';
 
+import { withFirebase } from '../Firebase';
 import { AuthUserContext, withAuthorization } from '../Session';
-import Dashboard from './Dashboard';
+import TimePunchList from './List';
+import PieChart from './PieChart';
+import PunchClock from './PunchClock';
+import { Row, Col } from 'reactstrap';
 
-const DashboardPage = (props) => {
+class DashboardComponent extends Component {
+  constructor(props) {
+    super(props);
 
-    const categoryId = props.match.params.id;
+    this.state = {
+      loading: false,
+      timePunches: [],
+      categoryInfo: {},
+      pieChartData: [],
+      categoryId: '',
+    };
+  }
+
+  componentDidMount() {
+    console.log("PRops: ", this.props)
+    this.setState({ 
+      categoryId: this.props.match.params.id,
+      loading: true
+     });
+
+    this.props.firebase.getCategory(this.props.match.params.id).on('value', snapshot => {
+      const categoryInfo = snapshot.val();
+      this.setState({ categoryInfo: categoryInfo })
+    });
+
+    this.props.firebase.timePunches(this.props.match.params.id).on('value', snapshot => {
+      const categoryObject = snapshot.val();
+      if (categoryObject) {
+        const timePunchesList = Object.keys(categoryObject).map(key => {
+          return ({
+            ...categoryObject[key],
+            uid: key,
+          })
+        });
+        timePunchesList.reverse();
+        this.setState({
+          timePunches: timePunchesList,
+          loading: false,
+        })
+      }
+    })
+  }
+
+  componentWillUnmount() {
+    this.props.firebase.categories().off();
+  }
+
+  render() {
+    const { timePunches, loading, categoryInfo } = this.state;
 
     return (
-        <AuthUserContext.Consumer>
-            {authUser => (
-                <div>
-                    <Dashboard categoryId={categoryId}/>
-                    {/* <ClockButton categoryId={categoryId}/> */}
-                    {/* <ClockForm categoryId={categoryId}/> */}
-                </div>
-            )}
-        </AuthUserContext.Consumer>
-    )
-};
+      <AuthUserContext.Consumer>
+        {authUser => (
+          <div>
+            {/* <PieChart timePunches={timePunches} /> */}
+            <PunchClock firebase={this.props.firebase} categoryId={this.state.categoryId}/>
+            <TimePunchList timePunches={timePunches} loading={loading} />
+          </div>
+        )}
+      </AuthUserContext.Consumer>
+    );
+  }
+}
 
 const condition = authUser => !!authUser;
 
-export default withAuthorization(condition)(DashboardPage);
+
+export default compose(
+  withAuthorization(condition),
+  withFirebase,
+)(DashboardComponent);;

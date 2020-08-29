@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart } from 'react-minimal-pie-chart';
+import { Row, Col } from 'reactstrap';
 
 function PieChartComponent ({ timePunches}) {
 
@@ -52,11 +53,12 @@ function PieChartComponent ({ timePunches}) {
     })
 
   return (
-    <div>
-      <PieChart
+    <Row>
+     <Col xs={12}>
+     <PieChart
           data={pieChartArray}
           label={({ dataEntry }) => dataEntry.title}
-          style={{ padding: `30px 80px 15px` }}
+          // style={{ padding: `30px 80px 15px` }}
           // labelStyle={() => ({
           //   fontSize: '5px',
           //   fontFamily: 'sans-serif',
@@ -66,7 +68,8 @@ function PieChartComponent ({ timePunches}) {
           // labelPosition={110}
           // labelStyle={defaultLabelStyle}
         />
-    </div>
+     </Col>
+    </Row>
   );
 }
 

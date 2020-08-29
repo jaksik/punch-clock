@@ -11,7 +11,8 @@ function TimePunchList({ timePunches, loading }) {
                     <tr>
                         <th>Date</th>
                         <th>Task</th>
-                        <th>Total</th>
+                        <th>TimeIn</th>
+                        <th>TimeOut</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,9 +27,11 @@ function TimePunchList({ timePunches, loading }) {
 
                         return (
                             <tr key={timePunch.uid} color={timePunch.theme}>
-                                <td>{timePunch.date}</td>
+                                <td>{timePunch.dateIn}</td>
                                 <td>{timePunch.task}</td>
-                                <td>{readableTime}</td>
+                                <td>{timePunch.timeIn}</td>
+                                <td>{timePunch.timeOut}</td>
+                                {/* <td>{readableTime}</td> */}
                             </tr>
                         )
                     })}
