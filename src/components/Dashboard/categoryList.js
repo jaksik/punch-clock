@@ -19,21 +19,25 @@ class CategoryListComponent extends Component {
   }
  
   componentDidMount() {
+    console.log("Props: ", this.props)
     this.setState({ loading: true });
  
-    this.props.firebase.categories().on('value', snapshot => {
+    this.props.firebase.categories(this.props.authUser.uid).on('value', snapshot => {
       const categoryObject = snapshot.val();
  
+     if (categoryObject) {
       const CategoryList = Object.keys(categoryObject).map(key => ({
         ...categoryObject[key],
         uid: key,
       }));
-
-      console.log("Category List: ", CategoryList)
       this.setState({
         categories: CategoryList,
         loading: false,
       });
+     }
+
+     console.log("Category List: ", this.state.categories)
+      
     });
   }
 

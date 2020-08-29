@@ -76,9 +76,11 @@ class Firebase {
   users = () => this.db.ref('users');
 
   // *** Categories API ***
-  categories = () => this.db.ref('categories');
+  categories = userId => this.db.ref(`categories/${userId}`);
 
-  getCategory = catId => this.db.ref(`categories/${catId}`);
+  createCategory = userId => this.db.ref(`categories/${userId}`);
+
+  getCategory = (userId, catId) => this.db.ref(`categories/${userId}/${catId}`);
 
   createTimePunch = catId => this.db.ref(`timePunches/${catId}/times`);
 

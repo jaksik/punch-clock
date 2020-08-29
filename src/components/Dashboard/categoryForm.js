@@ -27,7 +27,7 @@ const Dashboard = ({ authUser, firebase }) => {
         console.log("State: ", state)
     };
 
-    const createCategory = () => firebase.categories().push({
+    const createCategory = () => firebase.createCategory(authUser.uid).push({
         name: state.name,
         userId: authUser.uid,
         theme: state.theme,
