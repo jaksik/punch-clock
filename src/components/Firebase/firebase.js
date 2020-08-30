@@ -88,7 +88,6 @@ class Firebase {
 
   updateTimePunch = (catId, punchId) => this.db.ref(`timePunches/${catId}/times/${punchId}`);
 
-
 }
 
 export default Firebase;

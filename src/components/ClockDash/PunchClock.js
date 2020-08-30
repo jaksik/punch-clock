@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Input, Modal, Label, Spinner } from 'reactstrap';
 import { plus, date, minus, time, timeStamp } from './GetDate';
 
-function PunchClock({ firebase, categoryId }) {
+function PunchClock({ firebase, categoryId, currentTimePunch, stillClockedIn }) {
 
   const [clockedIn, punchClock] = useState(false);
 
@@ -15,12 +15,15 @@ function PunchClock({ firebase, categoryId }) {
   const [clockData, updateClockData] = useState({});
 
   useEffect(() => {
-    let clock = "hello"
-    console.log("Clock Data: ", clockData);
-  })
+    if (stillClockedIn && !clockedIn) {
+      updateClockData(currentTimePunch);
+      updatePunchId(currentTimePunch.uid);
+      punchClock(true);
+    }
+  }) 
 
   useEffect(() => {
-    if (clockedIn == true) {
+    if (clockedIn == true && !stillClockedIn) {
       firebase.createTimePunch(categoryId).push(clockData).then((snap) => {
         updatePunchId(snap.path.pieces_[3])
       })

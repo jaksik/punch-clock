@@ -2,19 +2,24 @@ import React, { useState } from 'react';
 
 import { withAuthorization } from '../Session';
 import { withFirebase } from '../Firebase';
+import { Button, Input, Label, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
-const DashboardPage = ({ authUser }) => {
+const CategoryFormComponent = ({ authUser }) => {
     return (
-        <div>
-            <Dash authUser={authUser} />
+        <div className="d-flex justify-content-end">
+            <CategoryForm authUser={authUser} />
         </div>
     )
 };
 
-const Dashboard = ({ authUser, firebase }) => {
+const Form = ({ authUser, firebase }) => {
 
     // console.log("Form Props: ", props)
     const [state, setState] = useState({ name: "", uid: "", theme: "success" });
+
+    const [modal, setModal] = useState(false);
+
+    const toggle = () => setModal(!modal);
 
     const handleChange = e => {
 
@@ -35,25 +40,36 @@ const Dashboard = ({ authUser, firebase }) => {
 
     return (
         <div>
-            <input
+            <Modal isOpen={modal}>
+                <ModalBody>
+                <Label>Category Name:</Label>
+
+                <Input
                 value={state.name}
                 type="text"
                 onChange={handleChange}
                 name="name"
+                placeholder="Category Name"
             />
-            <select name="theme" id="cars" value={state.theme} onChange={handleChange}>
-                <option value="success">success</option>
-                <option value="info">info</option>
-                <option value="warning">warning</option>
-                <option value="danger">danger</option>
-            </select>
-            <button onClick={createCategory}>Click Me</button>
+            <Label>Them Color:</Label>
+            <Input type="select" name="theme" id="cars" value={state.theme} onChange={handleChange}>
+                <option value="success">Green</option>
+                <option value="info">Blue</option>
+                <option value="warning">Yellow</option>
+                <option value="danger">Red</option>
+            </Input>
+            <button onClick={createCategory}>Create Category</button>
+       
+                </ModalBody>
+            </Modal>
+        <Button color="primary" onClick={toggle} className="m-3">+ Category</Button>{' '}
+
         </div>
     )
 };
 
 
 const condition = authUser => !!authUser;
-const Dash = withFirebase(Dashboard);
+const CategoryForm = withFirebase(Form);
 
-export default withAuthorization(condition)(DashboardPage);
+export default withAuthorization(condition)(CategoryFormComponent);

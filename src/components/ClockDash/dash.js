@@ -19,15 +19,17 @@ class DashboardComponent extends Component {
       pieChartData: [],
       categoryId: '',
       userId: '',
+      currentlyClockedIn: {},
+      stillClockedIn: false,
     };
   }
 
   componentDidMount() {
     console.log("PRops: ", this.props)
-    this.setState({ 
+    this.setState({
       categoryId: this.props.match.params.id,
       loading: true
-     });
+    });
 
     this.props.firebase.getCategory(this.props.authUser, this.props.match.params.id).on('value', snapshot => {
       const categoryInfo = snapshot.val();
@@ -48,7 +50,17 @@ class DashboardComponent extends Component {
         this.setState({
           timePunches: timePunchesList,
           loading: false,
-        })
+        }, () => {
+          if (timePunchesList[0] && timePunchesList[0].timeOut == "") {
+            this.setState({
+              currentlyClockedIn: timePunchesList[0],
+              stillClockedIn: true,
+            })
+          } else {
+            this.setState({ stillClockedIn: false })
+          }
+        });
+
       }
     })
   }
@@ -59,18 +71,24 @@ class DashboardComponent extends Component {
   }
 
   render() {
-    const { timePunches, loading, categoryInfo } = this.state;
+    const { timePunches, loading, categoryInfo, currentlyClockedIn, stillClockedIn } = this.state;
 
     return (
       <AuthUserContext.Consumer>
         {authUser => {
           return (
-          <div>
-            {/* <PieChart timePunches={timePunches} /> */}
-            <PunchClock firebase={this.props.firebase} categoryId={this.state.categoryId}/>
-            <TimePunchList timePunches={timePunches} loading={loading} />
-          </div>
-        )}}
+            <div>
+              {/* <PieChart timePunches={timePunches} /> */}
+              <PunchClock
+                firebase={this.props.firebase}
+                categoryId={this.state.categoryId}
+                currentTimePunch={currentlyClockedIn}
+                stillClockedIn={stillClockedIn}
+              />
+              <TimePunchList timePunches={timePunches} loading={loading} />
+            </div>
+          )
+        }}
       </AuthUserContext.Consumer>
     );
   }

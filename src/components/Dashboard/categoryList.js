@@ -7,6 +7,7 @@ import { withAuthorization } from '../Session';
 import { ListGroup, ListGroupItem, Modal } from 'reactstrap';
 import { PieChart } from 'react-minimal-pie-chart';
 import CategoryModal from './categoryModal'
+import CategoryForm from './categoryForm';
 
 class CategoryListComponent extends Component {
   constructor(props) {
@@ -59,8 +60,9 @@ class CategoryListComponent extends Component {
                 label={({ dataEntry }) => dataEntry.title}
                 style={{ padding: `30px 80px 15px` }}
             />
-        <h1>Categories</h1>
-    
+        <h1 style={{textAlign:`center`}}>Categories</h1>
+        <CategoryForm authUser={this.props.authUser}/>
+
         {loading && <div>Loading ...</div>}
  
         <CategoryList categories={categories} />
@@ -73,9 +75,9 @@ const CategoryList = ({ categories }) => (
   <ListGroup>
     {categories.map(category => (
       <Link to={`/category/${category.uid}`}>
-      <ListGroupItem key={category.uid} color={category.theme}>
+      <ListGroupItem key={category.uid} color={category.theme} className="p-4">
         {category.name}
-        <CategoryModal categoryUid={category.uid}/>
+        {/* <CategoryModal categoryUid={category.uid}/> */}
       </ListGroupItem>
       </Link>
     ))}

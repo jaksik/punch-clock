@@ -10,7 +10,6 @@ const DashboardPage = () => (
       console.log("AuthUse: ", authUser)
       return (
       <div>
-        <CategoryForm authUser={authUser}/>
         <CategoryList authUser={authUser}/>
       </div>
     )}}

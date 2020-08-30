@@ -7,17 +7,23 @@ import { PasswordForgetLink } from '../PasswordForget';
 
 import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
- 
+import { GoogleLoginButton } from "react-social-login-buttons";
+import { Row, Col } from 'reactstrap';
+
 const SignInPage = () => (
-  <div>
-    <h1>SignIn</h1>
-    <SignInForm />
-    <SignInGoogle />
+  <Row>
+    <Col xs={12}>
+    <h1 style={{textAlign:`center`}} className="mt-5">Log In</h1>
+    </Col>
+    {/* <SignInForm /> */}
+    <Col xs={12} className="d-flex justify-content-center">
+      <SignInGoogle/>
+    </Col>
 
-    <PasswordForgetLink />
+    {/* <PasswordForgetLink /> */}
 
-    <SignUpLink />
-  </div>
+    {/* <SignUpLink /> */}
+  </Row>
 );
  
 const INITIAL_STATE = {
@@ -119,8 +125,9 @@ class SignInGoogleBase extends Component {
  
     return (
       <form onSubmit={this.onSubmit}>
-        <button type="submit">Sign In with Google</button>
- 
+        {/* <button type="submit">Sign In with Google</button> */}
+        <GoogleLoginButton type="submit" style={{marginTop: `150px`}}/>
+
         {error && <p>{error.message}</p>}
       </form>
     );
