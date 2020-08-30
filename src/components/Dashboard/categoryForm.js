@@ -14,60 +14,69 @@ const CategoryFormComponent = ({ authUser }) => {
 
 const Form = ({ authUser, firebase }) => {
 
-    // console.log("Form Props: ", props)
-    const [state, setState] = useState({ name: "", uid: "", theme: "success" });
+    const [formData, setFormData] = useState({});
 
     const [modal, setModal] = useState(false);
 
-    const toggle = () => setModal(!modal);
+    const toggle = () => {
+        if (modal === false) {
+            setFormData({ name: "", uid: "", theme: "" })
+            setModal(true);
+        } else {
+            setFormData({ name: "", uid: "", theme: "" })
+            setModal(false);
+        }
+
+    };
 
     const handleChange = e => {
 
         const { name, value } = e.target;
 
-        setState(prevState => ({
+        setFormData(prevState => ({
             ...prevState,
             [name]: value
         }));
-        console.log("State: ", state)
     };
 
     const createCategory = () => firebase.createCategory(authUser.uid).push({
-        name: state.name,
+        name: formData.name,
         userId: authUser.uid,
-        theme: state.theme,
+        theme: formData.theme,
+    }).then((e) => {
+        console.log("EEEE: ", e);
+        setFormData({ name: "", uid: "", theme: "" })
+        setModal(false);
     });
 
     return (
         <div>
             <Modal isOpen={modal}>
                 <ModalBody>
-                <Label>Category Name:</Label>
+                    <Label>Category Name:</Label>
 
-                <Input
-                value={state.name}
-                type="text"
-                onChange={handleChange}
-                name="name"
-                placeholder="Category Name"
-            />
-            <Label>Them Color:</Label>
-            <Input type="select" name="theme" id="cars" value={state.theme} onChange={handleChange}>
-                <option value="success">Green</option>
-                <option value="info">Blue</option>
-                <option value="warning">Yellow</option>
-                <option value="danger">Red</option>
-            </Input>
-            <button onClick={createCategory}>Create Category</button>
-       
+                    <Input
+                        value={formData.name}
+                        type="text"
+                        onChange={handleChange}
+                        name="name"
+                        placeholder="Category Name"
+                    />
+                    <Label>Them Color:</Label>
+                    <Input type="select" name="theme" id="cars" value={formData.theme} onChange={handleChange}>
+                        <option value="success">Green</option>
+                        <option value="info">Blue</option>
+                        <option value="warning">Yellow</option>
+                        <option value="danger">Red</option>
+                    </Input>
+                    <Button onClick={createCategory} color="primary">Create Category</Button>
+                    <Button color="secondary" onClick={toggle} className="m-3">Cancel</Button>{' '}
                 </ModalBody>
             </Modal>
-        <Button color="primary" onClick={toggle} className="m-3">+ Category</Button>{' '}
-
+            <Button color="primary" onClick={toggle} className="m-3">+ Category</Button>{' '}
         </div>
     )
 };
-
 
 const condition = authUser => !!authUser;
 const CategoryForm = withFirebase(Form);

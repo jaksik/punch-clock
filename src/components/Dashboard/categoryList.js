@@ -75,7 +75,7 @@ const CategoryList = ({ categories }) => (
   <ListGroup>
     {categories.map(category => (
       <Link to={`/category/${category.uid}`}>
-      <ListGroupItem key={category.uid} color={category.theme} className="p-4">
+      <ListGroupItem key={category.uid} color={category.theme || "success"} className="p-4">
         {category.name}
         {/* <CategoryModal categoryUid={category.uid}/> */}
       </ListGroupItem>
