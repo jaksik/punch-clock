@@ -2,33 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Button, Input, Modal, Label, Spinner } from 'reactstrap';
 import { plus, date, minus, time, timeStamp } from './GetDate';
 
-function PunchClock({ firebase, categoryId, currentTimePunch, stillClockedIn }) {
-
-  const [clockedIn, punchClock] = useState(false);
-
-  const [clockingOut, toggleClockingOut] = useState(false);
-
-  const [loading, toggleLoading] = useState(false);
+function PunchClock({ firebase, categoryId, currentTimePunch, toggle, showEditForm }) {
 
   const [currentPunchId, updatePunchId] = useState('');
 
   const [clockData, updateClockData] = useState({});
 
-  useEffect(() => {
-    if (stillClockedIn && !clockedIn) {
-      updateClockData(currentTimePunch);
-      updatePunchId(currentTimePunch.uid);
-      punchClock(true);
-    }
-  }) 
+  const [closeModal, updateModal] = useState(false);
+
 
   useEffect(() => {
-    if (clockedIn == true && !stillClockedIn) {
-      firebase.createTimePunch(categoryId).push(clockData).then((snap) => {
-        updatePunchId(snap.path.pieces_[3])
-      })
-    }
-  }, [clockedIn])
+      updateClockData(currentTimePunch);
+      updatePunchId(currentTimePunch.uid);
+      console.log("Clock Data: ", currentPunchId);
+  }, [showEditForm]) 
 
   const handleFormChange = e => {
 
@@ -38,58 +25,27 @@ function PunchClock({ firebase, categoryId, currentTimePunch, stillClockedIn }) 
       ...prevState,
       [name]: value
     }));
+    console.log("Clock Data: ", clockData);
+
   };
 
-  const handleClockPunch = () => {
-    if (clockedIn == false) {
-      updateClockData(
-        {
-          dateIn: date(),
-          timeIn: time(),
-          timeInStamp: timeStamp(),
-          dateOut: "",
-          timeOut: "",
-          timeOutStamp: 0,
-          totalTime: 0,
-          task: "",
-          note: "",
-        }
-      )
-      punchClock(true);
-
-    } else if (clockedIn == true) {
-      toggleClockingOut(true)
-      updateClockData(prevState => ({
-        ...prevState,
-        "dateOut": date(),
-        "timeOut": time(),
-        "timeOutStamp": timeStamp(),
-        "task": "Prospecting",
-      }));
-    }
-  }
-
   const submitForm = () => {
-    toggleLoading(true);
     firebase.updateTimePunch(categoryId, currentPunchId).set(clockData).then(() => {
-      toggleClockingOut(false);
-      punchClock(false);
-      toggleLoading(false);
       updateClockData({});
+      toggle();
     });
   }
 
-  // console.log("Get Date: ", plus(3, 4))
+  const deleteTimePunch = () => {
+    firebase.updateTimePunch(categoryId, currentPunchId).remove().then(() => {
+        updateClockData({});
+        toggle();
+    });
+}
 
   return (
     <div>
-      {(loading ?
-
-        <Spinner color="info" />
-
-        :
-
-        <Modal isOpen={clockingOut}>
+        <Modal isOpen={showEditForm}>
           <Label>Start Date</Label>
           <Input
             type="date"
@@ -139,19 +95,8 @@ function PunchClock({ firebase, categoryId, currentTimePunch, stillClockedIn }) 
             value={clockData.note}
           />
           <Button color="primary" onClick={submitForm}>Accept</Button>{' '}
+        <Button onClick={deleteTimePunch} color="danger">Delete</Button>
         </Modal>
-
-      )}
-
-      <Button
-        onClick={handleClockPunch}
-        color={(clockedIn ? "danger" : "success")}
-        size="lg"
-        block
-        className="mt-3 mb-3 btn-block"
-      >
-        {(clockedIn ? "Clock Out" : "Clock In")}
-      </Button>
     </div>
   );
 }

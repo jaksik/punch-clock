@@ -6,9 +6,12 @@ import { AuthUserContext, withAuthorization } from '../Session';
 import TimePunchList from './List';
 import PieChart from './PieChart';
 import PunchClock from './PunchClock';
-import { Row, Col } from 'reactstrap';
+import CatForm from './CatForm';
+import { auth } from 'firebase';
 
 class DashboardComponent extends Component {
+  _isMounted = false;
+
   constructor(props) {
     super(props);
 
@@ -21,11 +24,14 @@ class DashboardComponent extends Component {
       userId: '',
       currentlyClockedIn: {},
       stillClockedIn: false,
+      redirect: false,
     };
   }
 
+
   componentDidMount() {
-    console.log("PRops: ", this.props)
+    this._isMounted = true;
+
     this.setState({
       categoryId: this.props.match.params.id,
       loading: true
@@ -33,8 +39,11 @@ class DashboardComponent extends Component {
 
     this.props.firebase.getCategory(this.props.authUser, this.props.match.params.id).on('value', snapshot => {
       const categoryInfo = snapshot.val();
-      this.setState({ categoryInfo: categoryInfo })
-      console.log("Cat Info: ", categoryInfo)
+      if (categoryInfo == null) {
+        this.setState({ redirect: true })
+      } else {
+        this.setState({ categoryInfo: categoryInfo })
+      }
     });
 
     this.props.firebase.timePunches(this.props.match.params.id).on('value', snapshot => {
@@ -60,24 +69,26 @@ class DashboardComponent extends Component {
             this.setState({ stillClockedIn: false })
           }
         });
-
       }
     })
   }
 
   componentWillUnmount() {
+    this._isMounted = false;
     this.props.firebase.getCategory().off();
     this.props.firebase.timePunches().off();
+    this.props.firebase.editCategory().off();
   }
 
   render() {
-    const { timePunches, loading, categoryInfo, currentlyClockedIn, stillClockedIn } = this.state;
-
+    const { timePunches, loading, categoryInfo, currentlyClockedIn, stillClockedIn, categoryId } = this.state;
     return (
       <AuthUserContext.Consumer>
         {authUser => {
           return (
             <div>
+              <CatForm categoryInfo={categoryInfo} firebase={this.props.firebase} categoryId={categoryId} />
+              <h1 className="text-center">{categoryInfo.name || ""}</h1>
               {/* <PieChart timePunches={timePunches} /> */}
               <PunchClock
                 firebase={this.props.firebase}
@@ -85,7 +96,9 @@ class DashboardComponent extends Component {
                 currentTimePunch={currentlyClockedIn}
                 stillClockedIn={stillClockedIn}
               />
-              <TimePunchList timePunches={timePunches} loading={loading} />
+              <TimePunchList 
+                              categoryId={this.state.categoryId}
+              timePunches={timePunches} firebase={this.props.firebase} loading={loading} />
             </div>
           )
         }}

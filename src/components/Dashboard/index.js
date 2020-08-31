@@ -7,7 +7,6 @@ import CategoryForm from './categoryForm';
 const DashboardPage = () => (
   <AuthUserContext.Consumer>
     {authUser => {
-      console.log("AuthUse: ", authUser)
       return (
       <div>
         <CategoryList authUser={authUser}/>

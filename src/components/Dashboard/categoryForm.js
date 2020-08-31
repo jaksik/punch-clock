@@ -19,14 +19,8 @@ const Form = ({ authUser, firebase }) => {
     const [modal, setModal] = useState(false);
 
     const toggle = () => {
-        if (modal === false) {
-            setFormData({ name: "", uid: "", theme: "" })
-            setModal(true);
-        } else {
-            setFormData({ name: "", uid: "", theme: "" })
-            setModal(false);
-        }
-
+        setFormData({ name: "", uid: "", theme: "" })
+        setModal(!modal);
     };
 
     const handleChange = e => {
@@ -39,15 +33,21 @@ const Form = ({ authUser, firebase }) => {
         }));
     };
 
-    const createCategory = () => firebase.createCategory(authUser.uid).push({
-        name: formData.name,
-        userId: authUser.uid,
-        theme: formData.theme,
-    }).then((e) => {
-        console.log("EEEE: ", e);
-        setFormData({ name: "", uid: "", theme: "" })
-        setModal(false);
-    });
+    const createCategory = () => {
+        if (formData.name == "") {
+            alert("Name required!");
+        } else {
+            firebase.createCategory(authUser.uid).push({
+                name: formData.name,
+                userId: authUser.uid,
+                theme: formData.theme,
+            }).then((e) => {
+                setFormData({ name: "", uid: "", theme: "" })
+                setModal(false);
+            });
+        }
+}
+console.log("Create caegory: ", authUser.uid)
 
     return (
         <div>
@@ -61,6 +61,7 @@ const Form = ({ authUser, firebase }) => {
                         onChange={handleChange}
                         name="name"
                         placeholder="Category Name"
+                        required
                     />
                     <Label>Them Color:</Label>
                     <Input type="select" name="theme" id="cars" value={formData.theme} onChange={handleChange}>

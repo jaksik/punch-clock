@@ -82,6 +82,9 @@ class Firebase {
 
   getCategory = (userId, catId) => this.db.ref(`categories/${userId}/${catId}`);
 
+  editCategory = (userId, catId) => this.db.ref(`categories/${userId}/${catId}`);
+
+  // *** Time Punch API ***
   createTimePunch = catId => this.db.ref(`timePunches/${catId}/times`);
 
   timePunches = catId => this.db.ref(`timePunches/${catId}/times`).orderByChild('timeIn');
